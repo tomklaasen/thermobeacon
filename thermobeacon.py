@@ -3,9 +3,14 @@
 
 from bluepy.btle import Scanner, DefaultDelegate
 from time import strftime
+import sys
+
+#print('Argument:', str(sys.argv[1]))
 
 #Enter the MAC address of the sensors
-SENSORS = {"02:0d:00:00:08:f3": "Garage" ,"02:0d:00:00:10:85" : "Garage2"}
+#SENSORS = {"62:53:00:00:14:ad": "Zolder" }
+SENSORS = {sys.argv[1]: "Meegegeven sensor" }
+
 
 class DecodeErrorException(Exception):
      def __init__(self, value):
@@ -32,7 +37,7 @@ def write_temp(where,what,value):
 #print("Establishing scanner...")
 scanner = Scanner().withDelegate(ScanDelegate())
 
-print ("-----------------------------------------------------------")
+#print ("-----------------------------------------------------------")
 
 sampled = {}
 ReadLoop = True
@@ -55,7 +60,7 @@ try:
                         ManuData = value
 
                 if (ManuData == ""):
-                    print ("No data received, end decoding")
+                    #print ("No data received, end decoding")
                     continue
 
                 #print (ManuData)
@@ -65,7 +70,7 @@ try:
                     ManuDataHex.append(int(i+j, 16))
 
                 if not len(ManuDataHex) == 20:
-                    print ("Ignoring invalid data length for {}: {}".format(CurrentDevLoc,len(ManuDataHex)))
+                    #print ("Ignoring invalid data length for {}: {}".format(CurrentDevLoc,len(ManuDataHex)))
                     retry = True
                     ReadLoop = True
                     continue
@@ -85,7 +90,8 @@ try:
 
                 #print ("Device Address: " + CurrentDevAddr )
                 #print ("Device Location: " + CurrentDevLoc )
-                print ("Device: {} Temperature: {} Humidity: {}%".format(CurrentDevLoc,TempData,HumidityData))
+                #print ("Device: {} Temperature: {} Humidity: {}%".format(CurrentDevLoc,TempData,HumidityData))
+                print(TempData)
                 write_temp(CurrentDevLoc,"Temperature",TempData)
                 write_temp(CurrentDevLoc,"Humidity",HumidityData)
                 sampled[CurrentDevAddr] = True
@@ -93,7 +99,7 @@ try:
                     ReadLoop = False
     
 except DecodeErrorException:
-    print("Decode Exception")
+    #print("Decode Exception")
     pass
 
-print ("-----------------------------------------------------------")
+#print ("-----------------------------------------------------------")
